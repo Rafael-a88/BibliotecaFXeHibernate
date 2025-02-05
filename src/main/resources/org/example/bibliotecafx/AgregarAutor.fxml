@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="450.0" prefWidth="500.0" style="-fx-background-color: #9c87c4;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="org.example.bibliotecafx.Autor.AgregarAutorController">
+    <children>
+        <VBox alignment="CENTER" layoutX="50.0" layoutY="50.0" prefHeight="200.0" prefWidth="400.0" spacing="20.0">
+            <children>
+                <Label text="Agregar Nuevo Autor" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="nombreField" promptText="Nombre" />
+                <TextField fx:id="nacionalidadField" promptText="Nacionalidad" />
+            </children>
+        </VBox>
+        <Button layoutX="224.0" layoutY="334.0" mnemonicParsing="false" text="Aceptar" />
+    </children>
+</AnchorPane>

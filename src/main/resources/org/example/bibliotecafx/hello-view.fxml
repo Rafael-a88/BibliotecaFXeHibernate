@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<HBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="900.0" style="-fx-background-color: #9c87c4;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.bibliotecafx.HelloController">
+   <children>
+      <VBox prefHeight="400.0" prefWidth="900.0">
+         <children>
+            <Pane prefHeight="94.0" prefWidth="900.0" style="-fx-background-color: black;">
+               <children>
+                  <Label layoutX="320.0" layoutY="27.0" prefHeight="36.0" prefWidth="315.0" text="Biblioteca San Agustín" textFill="WHITE">
+                     <font>
+                        <Font size="28.0" />
+                     </font>
+                  </Label>
+               </children>
+            </Pane>
+            <TabPane fx:id="tabPane" prefHeight="433.0" prefWidth="900.0" tabClosingPolicy="UNAVAILABLE">
+               <tabs>
+                  <Tab text="Inicio">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <Label layoutX="275.0" layoutY="200.0" prefHeight="47.0" prefWidth="384.0" text="Bienvenido a la Biblioteca San Agustín">
+                                 <font>
+                                    <Font size="22.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+                  <Tab text="Libros">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="429.0" prefWidth="900.0">
+                           <children>
+                              <TableView fx:id="booksTable" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="870.0">
+                                 <columns>
+                                    <TableColumn fx:id="titleColumn" prefWidth="174.0" text="Título" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="isbnColumn" prefWidth="174.0" text="ISBN" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="authorColumn" prefWidth="174.0" text="Autor" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="publisherColumn" prefWidth="174.0" text="Editorial" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="yearColumn" prefWidth="174.0" text="Año" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+
+                                 </columns>
+                              </TableView>
+                              <HBox spacing="10" layoutY="374.0" layoutX="14.0">
+                                 <Button mnemonicParsing="false" text="Agregar Libro" onAction="#abrirVentanaAgregarLibro" />
+                                 <Button mnemonicParsing="false" text="Modificar Libro" onAction="#abrirVentanaModificarLibro"/>
+                                 <Button mnemonicParsing="false" text="Eliminar Libro" onAction="#eliminarLibro" />
+                              </HBox>
+                              <HBox spacing="10" layoutY="374.0" layoutX="575.0">
+                                 <TextField fx:id="searchField" promptText="Buscar por título, autor o ISBN" />
+                                 <Button mnemonicParsing="false" text="Buscar" onAction="#buscarLibros" />
+                                 <Button mnemonicParsing="false" text="Mostrar Todo" onAction="#mostrarTodo" />
+                              </HBox>
+
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+                  <Tab text="Autores">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="429.0" prefWidth="900.0">
+                           <children>
+                              <TableView fx:id="authorsTable" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="870.0">
+                                 <columns>
+                                    <TableColumn fx:id="nombreColumn" prefWidth="435.0" text="Nombre" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                    <TableColumn fx:id="nacionalidadColumn" prefWidth="435.0" text="Nacionalidad" style="-fx-alignment: CENTER; -fx-font-size: 14px;"/>
+                                 </columns>
+                              </TableView>
+                              <HBox spacing="10" layoutY="374.0" layoutX="14.0">
+                                 <Button mnemonicParsing="false" text="Agregar Autor" onAction="#abrirVentanaAgregarAutor" />
+                                 <Button mnemonicParsing="false" text="Modificar Autor" onAction="#abrirVentanaModificarAutor" />
+                                 <Button mnemonicParsing="false" text="Eliminar Autor" onAction="#eliminarAutor" />
+                              </HBox>
+
+                              <HBox spacing="10" layoutY="374.0" layoutX="575.0">
+                                 <TextField fx:id="searchField2" layoutX="0.0" promptText="Buscar Nombre o Nacionalidad" />
+                                 <Button mnemonicParsing="false" text="Buscar" onAction="#buscarAutor"/>
+                                 <Button mnemonicParsing="false" text="Mostrar Todo" onAction="#mostrarTodoAutor" />
+                              </HBox>
+
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+                  <Tab text="Socios">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="429.0" prefWidth="900.0">
+                           <children>
+                              <TableView fx:id="membersTable" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="870.0">
+                                 <columns>
+                                    <TableColumn prefWidth="150.0" text="Nombre" />
+                                    <TableColumn prefWidth="150.0" text="Dirección" />
+                                    <TableColumn prefWidth="150.0" text="Teléfono" />
+                                 </columns>
+                              </TableView>
+                              <HBox spacing="10" layoutY="374.0" layoutX="14.0">
+                                 <Button mnemonicParsing="false" text="Agregar Socio" />
+                                 <Button mnemonicParsing="false" text="Modificar Socio" />
+                                 <Button mnemonicParsing="false" text="Eliminar Socio" />
+                              </HBox>
+                              <HBox spacing="10" layoutY="374.0" layoutX="575.0">
+                                 <TextField layoutX="0.0" promptText="Buscar Socio" />
+                                 <Button mnemonicParsing="false" text="Buscar" />
+                                 <Button mnemonicParsing="false" text="Mostrar Todo" onAction="#mostrarTodo" />
+                              </HBox>
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+                  <Tab text="Préstamos">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="429.0" prefWidth="900.0">
+                           <children>
+                              <TableView fx:id="loansTable" layoutX="14.0" layoutY="14.0" prefHeight="350.0" prefWidth="870.0">
+                                 <columns>
+                                    <TableColumn prefWidth="150.0" text="Libro" />
+                                    <TableColumn prefWidth="150.0" text="Socio" />
+                                    <TableColumn prefWidth="150.0" text="Fecha Préstamo" />
+                                    <TableColumn prefWidth="150.0" text="Fecha Devolución" />
+                                 </columns>
+                              </TableView>
+                              <Button layoutX="14.0" layoutY="374.0" mnemonicParsing="false" text="Registrar Préstamo" />
+                              <Button layoutX="174.0" layoutY="374.0" mnemonicParsing="false" text="Registrar Devolución" />
+                              <TextField layoutX="374.0" layoutY="374.0" promptText="Buscar Préstamo" />
+                              <Button layoutX="574.0" layoutY="374.0" mnemonicParsing="false" text="Buscar" />
+                           </children>
+                        </AnchorPane>
+                     </content>
+                  </Tab>
+               </tabs>
+            </TabPane>
+         </children>
+      </VBox>
+   </children>
+</HBox>
