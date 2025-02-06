@@ -2,6 +2,8 @@ module org.example.bibliotecafx {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
+    requires javafx.swing;
+    requires javafx.media;
 
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
@@ -10,13 +12,23 @@ module org.example.bibliotecafx {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
-    requires java.desktop;
 
-    opens org.example.bibliotecafx to javafx.fxml; // Permitir acceso a HelloController
-    opens org.example.bibliotecafx.Autor to javafx.fxml; // Permitir acceso a AgregarAutorController
-    opens org.example.bibliotecafx.Libro to javafx.fxml; // Permitir acceso a ModificarLibroController
+    requires java.desktop;
+    requires java.persistence; // Necesario para JPA
+    requires java.naming;
+    requires org.hibernate.orm.core;
+    requires jakarta.persistence; // Necesario para MySQL
+
+    // Hibernate no tiene un módulo explícito, pero puedes abrirlo al módulo no nombrado
+    opens org.example.bibliotecafx to javafx.fxml;
+    opens org.example.bibliotecafx.Autor to org.hibernate.orm.core, javafx.fxml;
+    opens org.example.bibliotecafx.Libro to org.hibernate.orm.core, javafx.fxml;
+
+
+
+
 
     exports org.example.bibliotecafx;
     exports org.example.bibliotecafx.Libro;
-    exports org.example.bibliotecafx.Autor; // Asegúrate de exportar el paquete Autor
+    exports org.example.bibliotecafx.Autor;
 }

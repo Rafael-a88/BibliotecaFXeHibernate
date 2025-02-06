@@ -1,10 +1,28 @@
 package org.example.bibliotecafx.Libro;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "libros")
 public class Book {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "titulo", nullable = false)
     private String title;
+
+    @Column(name = "isbn", nullable = false)
     private String isbn;
+
+    @Column(name = "autor", nullable = false)
     private String author;
+
+    @Column(name = "editorial", nullable = false)
     private String publisher;
+
+    @Column(name = "anio_publicacion", nullable = false)
     private int year;
 
     // Constructor
@@ -16,7 +34,17 @@ public class Book {
         this.year = year;
     }
 
+    public Book() {
+
+    }
+
     // Getters y Setters
+    public Long getId() {return id; }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getTitle() {
         return title;
     }
@@ -57,9 +85,11 @@ public class Book {
         this.year = year;
     }
 
-    // Método toString (opcional, para facilitar la visualización en la tabla)
+
     @Override
     public String toString() {
-        return title + " (" + isbn + ")";
+        return "Título: " + title + ", ISBN: " + isbn + ", Autor: " + author +
+                ", Editorial: " + publisher + ", Año de Publicación: " + year;
     }
+
 }

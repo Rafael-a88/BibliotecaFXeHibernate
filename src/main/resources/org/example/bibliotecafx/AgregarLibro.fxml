@@ -20,6 +20,6 @@
                 <TextField fx:id="yearField" promptText="Año de Publicación" />
             </children>
         </VBox>
-      <Button layoutX="224.0" layoutY="334.0" mnemonicParsing="false" text="Aceptar" />
+      <Button layoutX="224.0" layoutY="334.0" mnemonicParsing="false" text="Aceptar" onAction="#AgregarLibro"/>
     </children>
 </AnchorPane>

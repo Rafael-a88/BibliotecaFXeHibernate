@@ -12,10 +12,16 @@ import javafx.stage.Stage;
 import org.example.bibliotecafx.Autor.AgregarAutorController;
 import org.example.bibliotecafx.Autor.Autor;
 import org.example.bibliotecafx.Autor.ModificarAutorController;
+import org.example.bibliotecafx.Libro.AgregarLibroController;
 import org.example.bibliotecafx.Libro.Book;
 import org.example.bibliotecafx.Libro.ModificarLibroController;
+import org.example.bibliotecafx.Util.HibernateUtil;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class HelloController {
@@ -51,19 +57,7 @@ public class HelloController {
     private final ObservableList<Autor> authorList = FXCollections.observableArrayList(); // Lista de autores
 
     public HelloController(){
-        // Agregar libros
-        Book pruebaLibro = new Book("El Principito", "123456789", "Antoine de Saint-Exupéry", "Reynal & Hitchcock", 1943);
-        bookList.add(pruebaLibro);
 
-        Book pruebaLibro2 = new Book("Cien años de soledad", "987654321", "Gabriel García Márquez", "Editorial Sudamericana", 1967);
-        bookList.add(pruebaLibro2);
-
-        // Agregar autores
-        Autor autor1 = new Autor("Gabriel García Márquez", "Colombiano");
-        authorList.add(autor1);
-
-        Autor autor2 = new Autor("Antoine de Saint-Exupéry", "Francés");
-        authorList.add(autor2);
     }
 
     @FXML
@@ -75,7 +69,7 @@ public class HelloController {
 
     // Parte del controlador para controlar la pestaña LIBRO
 
-    public void cargarDatosLibro(){
+    public void cargarDatosLibro() {
         // Vincular las columnas del TableView con los atributos de la clase Book
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
         isbnColumn.setCellValueFactory(new PropertyValueFactory<>("isbn"));
@@ -83,39 +77,53 @@ public class HelloController {
         publisherColumn.setCellValueFactory(new PropertyValueFactory<>("publisher"));
         yearColumn.setCellValueFactory(new PropertyValueFactory<>("year"));
 
-        // Vincular bookList al TableView
-        booksTable.setItems(bookList);
+        // Cargar los libros desde la base de datos
+        bookList.clear();
+        List<Book> libros = obtenerLibrosDesdeBD(); // Metodo para obtener libros desde la base de datos
+        bookList.addAll(libros); // Agregar los libros a la lista observable
+        booksTable.setItems(bookList); // Vincular la lista al TableView
     }
+
+    private List<Book> obtenerLibrosDesdeBD() {
+        List<Book> libros = new ArrayList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            libros = session.createQuery("FROM Book", Book.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return libros;
+    }
+
     @FXML
     public void abrirVentanaAgregarLibro() {
         try {
-            // Cargar el archivo FXML de la ventana "Agregar Libro"
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bibliotecafx/AgregarLibro.fxml"));
             Scene scene = new Scene(fxmlLoader.load(), 500, 400);
 
-            // Crear una nueva ventana (Stage) para la vista "Agregar Libro"
             Stage stage = new Stage();
             stage.setTitle("Agregar Libro");
             stage.setScene(scene);
-
-            // Configurar la ventana como modal (bloquea la ventana principal hasta que se cierre)
             stage.initModality(Modality.APPLICATION_MODAL);
 
-            // Mostrar la ventana y esperar a que se cierre
+            // Pasar el controlador principal al controlador de agregar libro
+            AgregarLibroController controller = fxmlLoader.getController();
+            controller.setMainController(this);
+
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+
     @FXML
     public void abrirVentanaModificarLibro() {
-        // Obtener el libro seleccionado de la tabla
         Book selectedBook = booksTable.getSelectionModel().getSelectedItem();
 
-        if (selectedBook != null) { // Verifica que haya un libro seleccionado
+        if (selectedBook != null) {
             try {
-                // Código para abrir la ventana de modificar libro
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bibliotecafx/ModificarLibro.fxml"));
                 Scene scene = new Scene(fxmlLoader.load(), 500, 400);
 
@@ -124,7 +132,8 @@ public class HelloController {
                 stage.setScene(scene);
 
                 ModificarLibroController controller = fxmlLoader.getController();
-                controller.setBookData(selectedBook.getTitle(), selectedBook.getIsbn(), selectedBook.getAuthor(), selectedBook.getPublisher(), String.valueOf(selectedBook.getYear()));
+                controller.setBookData(selectedBook); // Pasar el objeto Book completo
+                controller.setMainController(this); // Pasar el controlador principal
 
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.showAndWait();
@@ -132,10 +141,11 @@ public class HelloController {
                 e.printStackTrace();
             }
         } else {
-            // Mostrar un mensaje de advertencia si no hay un libro seleccionado
             mostrarAlerta("Por favor, selecciona un libro para modificar.");
         }
     }
+
+
 
     @FXML
     public void eliminarLibro() {
@@ -147,10 +157,21 @@ public class HelloController {
             alert.setHeaderText("¿Está seguro de que desea eliminar este libro?");
             alert.setContentText("Título: " + selectedBook.getTitle() + "\nISBN: " + selectedBook.getIsbn());
 
-
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                bookList.remove(selectedBook);
+                // Eliminar el libro de la base de datos
+                try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                    Transaction transaction = session.beginTransaction();
+                    session.delete(session.merge(selectedBook)); // Asegúrate de que el libro esté gestionado
+                    transaction.commit();
+                    System.out.println("Libro eliminado de la base de datos: " + selectedBook);
+
+                    // Actualizar la lista de libros
+                    bookList.remove(selectedBook);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlerta("Error al eliminar el libro de la base de datos.");
+                }
             }
         } else {
             mostrarAlerta("Por favor, selecciona un libro para eliminar.");
@@ -252,6 +273,7 @@ public class HelloController {
             mostrarAlerta("Por favor, selecciona un autor para modificar.");
         }
     }
+
 
 
     @FXML
