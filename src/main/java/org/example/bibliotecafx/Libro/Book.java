@@ -1,6 +1,10 @@
 package org.example.bibliotecafx.Libro;
 
 import jakarta.persistence.*;
+import org.example.bibliotecafx.Prestamos.Prestamos;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "libros")
@@ -25,7 +29,14 @@ public class Book {
     @Column(name = "anio_publicacion", nullable = false)
     private int year;
 
-    // Constructor
+    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Prestamos> prestamos = new ArrayList<>();
+
+    // Constructor vacío (obligatorio para Hibernate)
+    public Book() {
+    }
+
+    // Constructor personalizado
     public Book(String title, String isbn, String author, String publisher, int year) {
         this.title = title;
         this.isbn = isbn;
@@ -34,12 +45,10 @@ public class Book {
         this.year = year;
     }
 
-    public Book() {
-
-    }
-
     // Getters y Setters
-    public Long getId() {return id; }
+    public Long getId() {
+        return id;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -85,11 +94,17 @@ public class Book {
         this.year = year;
     }
 
+    public List<Prestamos> getPrestamos() {
+        return prestamos;
+    }
+
+    public void setPrestamos(List<Prestamos> prestamos) {
+        this.prestamos = prestamos;
+    }
 
     @Override
     public String toString() {
         return "Título: " + title + ", ISBN: " + isbn + ", Autor: " + author +
                 ", Editorial: " + publisher + ", Año de Publicación: " + year;
     }
-
 }

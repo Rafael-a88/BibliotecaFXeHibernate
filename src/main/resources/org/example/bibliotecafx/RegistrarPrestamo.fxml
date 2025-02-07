@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane prefHeight="450.0" prefWidth="500.0" style="-fx-background-color: #9c87c4;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17.0.12" fx:controller="org.example.bibliotecafx.Prestamos.RegistrarPrestamoController">
+    <children>
+        <VBox alignment="CENTER" layoutX="50.0" layoutY="50.0" prefHeight="300.0" prefWidth="400.0" spacing="20.0">
+            <children>
+                <Label text="Registrar Préstamo" textFill="WHITE">
+                    <font>
+                        <Font size="20.0" />
+                    </font>
+                </Label>
+                <ComboBox fx:id="libroComboBox" promptText="Seleccione un libro"/>
+                <ComboBox fx:id="socioComboBox" promptText="Seleccione un socio"/>
+                <DatePicker fx:id="fechaPrestamoPicker" promptText="Fecha de Préstamo"/>
+                <DatePicker fx:id="fechaDevolucionPicker" promptText="Fecha de Devolución"/>
+                <Button text="Registrar Prestamo" onAction="#registrarPrestamo"/>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

@@ -23,12 +23,12 @@ module org.example.bibliotecafx {
     opens org.example.bibliotecafx to javafx.fxml;
     opens org.example.bibliotecafx.Autor to org.hibernate.orm.core, javafx.fxml;
     opens org.example.bibliotecafx.Libro to org.hibernate.orm.core, javafx.fxml;
-
-
-
-
+    opens org.example.bibliotecafx.Socios to org.hibernate.orm.core, javafx.fxml;
+    opens org.example.bibliotecafx.Prestamos to org.hibernate.orm.core, javafx.fxml;
 
     exports org.example.bibliotecafx;
     exports org.example.bibliotecafx.Libro;
     exports org.example.bibliotecafx.Autor;
+    exports org.example.bibliotecafx.Socios;
+    exports org.example.bibliotecafx.Prestamos;
 }

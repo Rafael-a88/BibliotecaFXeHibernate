@@ -7,6 +7,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.example.bibliotecafx.Autor.AgregarAutorController;
@@ -15,16 +17,25 @@ import org.example.bibliotecafx.Autor.ModificarAutorController;
 import org.example.bibliotecafx.Libro.AgregarLibroController;
 import org.example.bibliotecafx.Libro.Book;
 import org.example.bibliotecafx.Libro.ModificarLibroController;
+import org.example.bibliotecafx.Prestamos.RegistrarPrestamoController;
+import org.example.bibliotecafx.Socios.AgregarSocioController;
+import org.example.bibliotecafx.Socios.ModificarSocioController;
+import org.example.bibliotecafx.Socios.Socio;
+import org.example.bibliotecafx.Prestamos.Prestamos;
 import org.example.bibliotecafx.Util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class HelloController {
+
+
 
     // Variables para libros
     @FXML
@@ -33,6 +44,8 @@ public class HelloController {
     private TextField searchField;
     @FXML
     private TextField searchField2;
+    @FXML
+    private TextField searchField3;
     @FXML
     private TableColumn<Book, String> titleColumn;
     @FXML
@@ -56,6 +69,39 @@ public class HelloController {
 
     private final ObservableList<Autor> authorList = FXCollections.observableArrayList(); // Lista de autores
 
+    // Variables para Socios
+
+    @FXML
+    private TableView<Socio> sociosTable; // Tabla para socios
+    @FXML
+    private TableColumn<Socio, String> nombreColumn2; // Columna para nombre
+    @FXML
+    private TableColumn<Socio, String> direccionColumn; // Columna para dirección
+    @FXML
+    private TableColumn<Socio, String> telefonoColumn; // Columna para teléfono
+
+    private final ObservableList<Socio> socioList = FXCollections.observableArrayList(); // Lista de socios
+
+
+    // Variables para Prestamos
+    @FXML
+    private TableView<Prestamos> loansTable;
+    @FXML
+    private TableColumn<Prestamos, String> libroColumn;
+    @FXML
+    private TableColumn<Prestamos, String> socioColumn;
+    @FXML
+    private TableColumn<Prestamos, LocalDate> fechaPrestamColumn;
+    @FXML
+    private TableColumn<Prestamos, LocalDate> fechaDevolucionColumn;
+    @FXML
+    private TableColumn<Prestamos, String> estadoColumn;
+    @FXML
+    private TextField buscarTextField;
+
+
+    private final ObservableList<Prestamos> loansList = FXCollections.observableArrayList();
+
     public HelloController(){
 
     }
@@ -64,6 +110,10 @@ public class HelloController {
     public void initialize() {
         cargarDatosLibro();
         cargarDatosAutor();
+        cargarDatosSocio();
+        cargarDatosPrestamos();
+
+
     }
 
 
@@ -88,13 +138,26 @@ public class HelloController {
         List<Book> libros = new ArrayList<>();
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            libros = session.createQuery("FROM Book", Book.class).list();
+
+            // Obtener los libros que no tienen préstamos activos
+            libros = session.createQuery(
+                            "SELECT b " +
+                                    "FROM Book b " +
+                                    "WHERE b.id NOT IN (" +
+                                    "  SELECT p.libro.id " +
+                                    "  FROM Prestamos p " +
+                                    "  WHERE p.estado = 'Activo'" +
+                                    ")", Book.class)
+                    .list();
+
             transaction.commit();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         return libros;
     }
+
 
     @FXML
     public void abrirVentanaAgregarLibro() {
@@ -212,14 +275,31 @@ public class HelloController {
 
     // FIN de la parte del controlador para controlar la pestaña LIBRO
 
+    // Parte del controlador para controlar la pestaña Autor
     public void cargarDatosAutor() {
         // Vincular las columnas del TableView con los atributos de la clase Autor
         nombreColumn.setCellValueFactory(new PropertyValueFactory<>("nombre"));
         nacionalidadColumn.setCellValueFactory(new PropertyValueFactory<>("nacionalidad"));
 
-        // Vincular authorList al TableView
-        authorsTable.setItems(authorList);
+        // Cargar los autores desde la base de datos
+        authorList.clear();
+        List<Autor> autores = obtenerAutoresDesdeBD(); // Método para obtener autores desde la base de datos
+        authorList.addAll(autores); // Agregar los autores a la lista observable
+        authorsTable.setItems(authorList); // Vincular la lista al TableView
     }
+
+    private List<Autor> obtenerAutoresDesdeBD() {
+        List<Autor> autores = new ArrayList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            autores = session.createQuery("FROM Autor", Autor.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return autores;
+    }
+
 
     @FXML
     public void abrirVentanaAgregarAutor() {
@@ -235,6 +315,10 @@ public class HelloController {
 
             // Configurar la ventana como modal (bloquea la ventana principal hasta que se cierre)
             stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Pasar el controlador principal al controlador de agregar autor
+            AgregarAutorController controller = fxmlLoader.getController();
+            controller.setMainController(this);
 
             // Mostrar la ventana y esperar a que se cierre
             stage.showAndWait();
@@ -260,7 +344,8 @@ public class HelloController {
 
                 // Obtener el controlador de la ventana "Modificar Autor"
                 ModificarAutorController controller = fxmlLoader.getController();
-                controller.setAutorData(selectedAutor.getNombre(), selectedAutor.getNacionalidad());
+                controller.setAutorData(selectedAutor); // Pasar el objeto Autor completo
+                controller.setMainController(this); // Pasar el controlador principal
 
                 // Configurar la ventana como modal (bloquea la ventana principal hasta que se cierre)
                 stage.initModality(Modality.APPLICATION_MODAL);
@@ -275,7 +360,6 @@ public class HelloController {
     }
 
 
-
     @FXML
     public void eliminarAutor() {
         Autor selectedAutor = authorsTable.getSelectionModel().getSelectedItem();
@@ -288,19 +372,32 @@ public class HelloController {
 
             Optional<ButtonType> result = alert.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
-                authorList.remove(selectedAutor);
+                // Eliminar el autor de la base de datos
+                try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                    Transaction transaction = session.beginTransaction();
+                    session.delete(session.merge(selectedAutor));
+                    transaction.commit();
+                    System.out.println("Autor eliminado de la base de datos: " + selectedAutor);
+
+                    // Actualizar la lista de autores
+                    authorList.remove(selectedAutor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlerta("Error al eliminar el autor de la base de datos.");
+                }
             }
         } else {
             mostrarAlerta("Por favor, selecciona un autor para eliminar.");
         }
     }
 
+
     @FXML
     public void buscarAutor() {
         String query = searchField2.getText().toLowerCase(); // Obtener el texto de búsqueda
         ObservableList<Autor> filteredList = FXCollections.observableArrayList();
 
-        // Filtrar los libros
+        // Filtrar los autores
         for (Autor autor : authorList) {
             if (autor.getNombre().toLowerCase().contains(query) ||
                     autor.getNacionalidad().toLowerCase().contains(query)) {
@@ -312,11 +409,237 @@ public class HelloController {
         authorsTable.setItems(filteredList);
     }
 
+
     @FXML
     public void mostrarTodoAutor() {
         authorsTable.setItems(authorList);
     }
-    // Parte del controlador para controlar la pestaña Autor
+
+    // Fin de la parte del controlador para controlar la pestaña Autor
+
+    // Parte del controlador para controlar la pestaña Socios
+
+    // Método para cargar los datos de los socios
+    public void cargarDatosSocio() {
+        // Vincular las columnas del TableView con los atributos de la clase Socio
+        nombreColumn2.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        direccionColumn.setCellValueFactory(new PropertyValueFactory<>("direccion"));
+        telefonoColumn.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+
+        // Cargar los socios desde la base de datos
+        socioList.clear();
+        List<Socio> socios = obtenerSociosDesdeBD(); // Método para obtener socios desde la base de datos
+        socioList.addAll(socios); // Agregar los socios a la lista observable
+        sociosTable.setItems(socioList); // Vincular la lista al TableView
+    }
+
+    private List<Socio> obtenerSociosDesdeBD() {
+        List<Socio> socios = new ArrayList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            socios = session.createQuery("FROM Socio", Socio.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return socios;
+    }
+
+    @FXML
+    public void abrirVentanaAgregarSocio() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bibliotecafx/AgregarSocio.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 500, 400);
+
+            Stage stage = new Stage();
+            stage.setTitle("Agregar Socio");
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            // Pasar el controlador principal al controlador de agregar socio
+            AgregarSocioController controller = fxmlLoader.getController();
+            controller.setMainController(this);
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void abrirVentanaModificarSocio() {
+        Socio selectedSocio = sociosTable.getSelectionModel().getSelectedItem();
+
+        if (selectedSocio != null) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bibliotecafx/ModificarSocio.fxml"));
+                Scene scene = new Scene(fxmlLoader.load(), 500, 400);
+
+                Stage stage = new Stage();
+                stage.setTitle("Modificar Socio");
+                stage.setScene(scene);
+
+                ModificarSocioController controller = fxmlLoader.getController();
+                controller.setSocioData(selectedSocio); // Pasar el objeto Socio completo
+                controller.setMainController(this); // Pasar el controlador principal
+
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.showAndWait();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            mostrarAlerta("Por favor, selecciona un socio para modificar.");
+        }
+    }
+
+    @FXML
+    public void eliminarSocio() {
+        Socio selectedSocio = sociosTable.getSelectionModel().getSelectedItem();
+
+        if (selectedSocio != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Confirmar Eliminación");
+            alert.setHeaderText("¿Está seguro de que desea eliminar este socio?");
+            alert.setContentText("Nombre: " + selectedSocio.getNombre());
+
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                // Eliminar el socio de la base de datos
+                try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                    Transaction transaction = session.beginTransaction();
+                    session.delete(session.merge(selectedSocio)); // Asegúrate de que el socio esté gestionado
+                    transaction.commit();
+                    System.out.println("Socio eliminado de la base de datos: " + selectedSocio);
+
+                    // Actualizar la lista de socios
+                    socioList.remove(selectedSocio);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mostrarAlerta("Error al eliminar el socio de la base de datos.");
+                }
+            }
+        } else {
+            mostrarAlerta("Por favor, selecciona un socio para eliminar.");
+        }
+    }
+
+    @FXML
+    public void buscarSocios() {
+        String query = searchField3.getText().toLowerCase(); // Obtener el texto de búsqueda
+        ObservableList<Socio> filteredList = FXCollections.observableArrayList();
+
+        // Filtrar los socios
+        for (Socio socio : socioList) {
+            if (socio.getNombre().toLowerCase().contains(query) ||
+                    socio.getDireccion().toLowerCase().contains(query) ||
+                    socio.getTelefono().contains(query)) {
+                filteredList.add(socio);
+            }
+        }
+
+        // Actualizar la tabla
+        sociosTable.setItems(filteredList);
+    }
+
+    @FXML
+    public void mostrarTodoSocio() {
+        sociosTable.setItems(socioList);
+    }
+
+    // Parte del controlador para los Prestamos
+
+    @FXML
+    public void abrirVentanaRegistrarPrestamo() {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bibliotecafx/RegistrarPrestamo.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 500, 400);
+
+            Stage stage = new Stage();
+            stage.setTitle("Registrar Préstamo");
+            stage.setScene(scene);
+            stage.initModality(Modality.APPLICATION_MODAL);
+
+            RegistrarPrestamoController controller = fxmlLoader.getController();
+            controller.setMainController(this);
+
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void registrarDevolucion() {
+        // Obtener el préstamo seleccionado
+        Prestamos selectedPrestamo = loansTable.getSelectionModel().getSelectedItem();
+
+        if (selectedPrestamo != null) {
+            // Cambiar el estado a "Entregado"
+            selectedPrestamo.setEstado("Entregado");
+
+            // Actualizar el préstamo en la base de datos
+            try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                Transaction transaction = session.beginTransaction();
+                session.update(selectedPrestamo); // Actualiza el objeto en la base de datos
+                transaction.commit();
+                System.out.println("Préstamo actualizado a 'Entregado': " + selectedPrestamo);
+            } catch (Exception e) {
+                e.printStackTrace();
+                mostrarAlerta("Error al actualizar el estado del préstamo.");
+            }
+
+            // Actualizar la tabla para reflejar los cambios
+            cargarDatosPrestamos(); // Recargar los datos de la tabla
+            cargarDatosLibro();
+        } else {
+            mostrarAlerta("Por favor, selecciona un préstamo para registrar la devolución.");
+        }
+    }
+
+
+    public void cargarDatosPrestamos() {
+        // Vincular las columnas del TableView con los atributos de la clase Prestamos
+        libroColumn.setCellValueFactory(new PropertyValueFactory<>("libro"));
+        socioColumn.setCellValueFactory(new PropertyValueFactory<>("socio"));
+        fechaPrestamColumn.setCellValueFactory(new PropertyValueFactory<>("fechaPrestamo"));
+        fechaDevolucionColumn.setCellValueFactory(new PropertyValueFactory<>("fechaDevolucion"));
+        estadoColumn.setCellValueFactory(new PropertyValueFactory<>("estado"));
+
+        // Cargar los préstamos desde la base de datos
+        loansList.clear();
+        List<Prestamos> prestamos = obtenerPrestamosDesdeBD(); // Método para obtener préstamos desde la base de datos
+        loansList.addAll(prestamos); // Agregar los préstamos a la lista observable
+        loansTable.setItems(loansList); // Vincular la lista al TableView
+        cargarDatosLibro();
+    }
+
+    private List<Prestamos> obtenerPrestamosDesdeBD() {
+        List<Prestamos> prestamos = new ArrayList<>();
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Transaction transaction = session.beginTransaction();
+            prestamos = session.createQuery("FROM Prestamos", Prestamos.class).list();
+            transaction.commit();
+            cargarDatosLibro();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return prestamos;
+    }
+
+    @FXML
+    public void buscarPrestamos() {
+        String busqueda = buscarTextField.getText().toLowerCase();
+
+        List<Prestamos> prestamosFiltered = loansList.stream()
+                .filter(p -> p.getSocio().toLowerCase().contains(busqueda))
+                .collect(Collectors.toList());
+
+        loansTable.getItems().setAll(prestamosFiltered);
+    }
+
+
+
 
 
 }

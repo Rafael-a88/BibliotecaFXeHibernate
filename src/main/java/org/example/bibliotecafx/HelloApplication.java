@@ -19,29 +19,11 @@ public class HelloApplication extends Application {
         stage.setTitle("Biblioteca San Agustín");
         stage.setScene(scene);
         stage.show();
+
+
     }
 
     public static void main(String[] args) {
-        // Inicializar Hibernate antes de lanzar la aplicación JavaFX
-        try {
-            // Crear la SessionFactory
-            SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-
-            // Abrir una sesión y realizar una operación simple para forzar la creación de la tabla
-            Session session = sessionFactory.openSession();
-            session.beginTransaction();
-
-            // Crear un objeto Autor y guardarlo en la base de datos
-            Autor autor = new Autor("Gabriel García Márquez", "Colombiano");
-            session.save(autor);
-
-            session.getTransaction().commit();
-            session.close();
-        } catch (Exception e) {
-            System.err.println("Error al inicializar Hibernate: " + e.getMessage());
-            e.printStackTrace();
-        }
-
         // Lanzar la aplicación JavaFX
         launch(args);
     }

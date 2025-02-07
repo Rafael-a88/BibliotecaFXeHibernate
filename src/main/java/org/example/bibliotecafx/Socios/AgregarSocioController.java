@@ -1,4 +1,4 @@
-package org.example.bibliotecafx.Autor;
+package org.example.bibliotecafx.Socios;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -8,36 +8,40 @@ import org.example.bibliotecafx.Util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
-public class AgregarAutorController {
+public class AgregarSocioController {
 
     @FXML
     private TextField nombreField;
 
     @FXML
-    private TextField nacionalidadField;
+    private TextField direccionField;
+
+    @FXML
+    private TextField telefonoField;
 
     private HelloController mainController;
 
     @FXML
-    private void agregarAutor(ActionEvent event) {
+    private void agregarSocio(ActionEvent event) {
         String nombre = nombreField.getText();
-        String nacionalidad = nacionalidadField.getText();
+        String direccion = direccionField.getText();
+        String telefono = telefonoField.getText();
 
-        if (nombre.isEmpty() || nacionalidad.isEmpty()) {
+        if (nombre.isEmpty() || direccion.isEmpty() || telefono.isEmpty()) {
             System.out.println("Todos los campos son obligatorios.");
             return;
         }
 
-        Autor autor = new Autor(nombre, nacionalidad);
+        Socio socio = new Socio(nombre, direccion, telefono);
 
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             Transaction transaction = session.beginTransaction();
-            session.persist(autor);
+            session.persist(socio);
             transaction.commit();
-            System.out.println("Autor guardado en la base de datos: " + autor);
+            System.out.println("Socio guardado en la base de datos: " + socio);
 
             if (mainController != null) {
-                mainController.cargarDatosAutor();
+                mainController.cargarDatosSocio();
             }
         } catch (Exception e) {
             e.printStackTrace();

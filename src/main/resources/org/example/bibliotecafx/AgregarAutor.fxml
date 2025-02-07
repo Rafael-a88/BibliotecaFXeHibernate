@@ -16,6 +16,6 @@
                 <TextField fx:id="nacionalidadField" promptText="Nacionalidad" />
             </children>
         </VBox>
-        <Button layoutX="224.0" layoutY="334.0" mnemonicParsing="false" text="Aceptar" />
+        <Button layoutX="224.0" layoutY="334.0" mnemonicParsing="false" text="Aceptar" onAction="#agregarAutor"/>
     </children>
 </AnchorPane>
