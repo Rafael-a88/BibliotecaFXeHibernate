@@ -399,8 +399,7 @@ public class HelloController {
 
         // Filtrar los autores
         for (Autor autor : authorList) {
-            if (autor.getNombre().toLowerCase().contains(query) ||
-                    autor.getNacionalidad().toLowerCase().contains(query)) {
+            if (autor.getNombre().toLowerCase().contains(query)) {
                 filteredList.add(autor);
             }
         }
@@ -532,7 +531,6 @@ public class HelloController {
         // Filtrar los socios
         for (Socio socio : socioList) {
             if (socio.getNombre().toLowerCase().contains(query) ||
-                    socio.getDireccion().toLowerCase().contains(query) ||
                     socio.getTelefono().contains(query)) {
                 filteredList.add(socio);
             }

@@ -1,0 +1,164 @@
+/* Fondo general de las ventanas */
+.root {
+    -fx-background-color: #9c87c4;
+}
+
+/* Estilo de los títulos principales */
+.label-title {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-family: "Arial";
+}
+
+/* Estilo para las etiquetas de texto */
+.label {
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+}
+
+/* Botones generales */
+.button {
+    -fx-background-color: #FFA07A;
+    -fx-text-fill: black;
+    -fx-font-size: 12px; /* Tamaño de fuente reducido */
+    -fx-font-family: "Arial";
+    -fx-padding: 8 16; /* Padding reducido */
+    -fx-border-color: transparent;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Botón para acciones específicas (como eliminar) */
+.button-green {
+    -fx-background-color: #90EE90;
+    -fx-text-fill: black;
+    -fx-font-size: 12px; /* Tamaño de fuente reducido */
+    -fx-font-family: "Arial";
+    -fx-padding: 8 16; /* Padding reducido */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+/* Botón de búsqueda */
+.button-search {
+    -fx-background-color: #FFE0B2;
+    -fx-text-fill: black;
+    -fx-font-size: 12px; /* Tamaño de fuente reducido */
+    -fx-font-family: "Arial";
+    -fx-padding: 8 16; /* Padding reducido */
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+
+/* TabPane estilos */
+.tab-pane {
+    -fx-background-color: #FFF9C4;
+}
+
+/* Estilo de los Tab */
+.tab {
+    -fx-background-color: #FFE0B2;
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+}
+
+/* Tabla general */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: lightgray;
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* Columnas de la tabla */
+.table-column {
+    -fx-alignment: CENTER;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* Estilo de los campos de texto */
+.text-field {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* DatePicker */
+.date-picker {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: lightgray;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 5 10;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+/* HBox y VBox */
+.hbox, .vbox {
+    -fx-spacing: 10;
+    -fx-alignment: CENTER;
+}
+
+/* Pane superior (encabezado negro) */
+.pane-header {
+    -fx-background-color: black;
+}
+
+.pane-header .label {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-family: "Arial";
+}
+
+.welcomeLabel {
+    -fx-font-size: 30px;
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+.home-tab {
+    -fx-background-color: #FFF9C4; /* Color de fondo de la pestaña */
+    -fx-text-fill: black; /* Color del texto */
+    -fx-font-size: 22px; /* Tamaño de fuente */
+}
+
+/* Tabla general */
+.table-view {
+
+    -fx-border-color: violet;
+    -fx-border-width: 1;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial";
+}
+
+
+/* Estilo para las filas de la tabla */
+.table-view .table-row-cell {
+    -fx-background-color: #FFCC99; /* Color de fondo suave anaranjado para las filas */
+}
+
+
+/* Estilo para las filas seleccionadas */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #add8e6; /* Color de fondo para la fila seleccionada */
+}
+
